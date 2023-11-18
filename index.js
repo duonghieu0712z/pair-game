@@ -86,7 +86,13 @@ function matchCard(card) {
 
   countedMatch += 2;
   if (countedMatch === 20) {
-    setTimeout(() => alert(`You win, you get ${coin} coins! Click 'Restart' to start again!`), 11);
+    setTimeout(
+      () =>
+        alert(
+          `You win, you get ${coin} coins! Click 'Restart' to start again!`
+        ),
+      11
+    );
   }
 }
 
@@ -114,14 +120,25 @@ function updateCoin(bonus) {
 }
 
 function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.trunc(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
+  // for (let i = arr.length - 1; i > 0; i--) {
+  //   const j = Math.trunc(Math.random() * (i + 1));
+  //   [arr[i], arr[j]] = [arr[j], arr[i]];
+  // }
   return arr;
 }
 
-const colors = ["red", "green", "blue", "yellow", "magenta", "cyan", "orange", "brown", "pink", "purple"];
+const colors = [
+  "red",
+  "green",
+  "blue",
+  "yellow",
+  "magenta",
+  "cyan",
+  "orange",
+  "brown",
+  "pink",
+  "purple",
+];
 
 function initGame() {
   firstCard = null;
