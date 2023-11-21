@@ -25,15 +25,6 @@ export class Card extends Node {
     this._cover.active = !this._isFlipped;
   }
 
-  translate(x, y, duration, delay) {
-    gsap.to(this, {
-      x,
-      y,
-      duration,
-      delay,
-    });
-  }
-
   flip(duration, delay = 0) {
     return gsap.to(this, {
       scaleX: 0,

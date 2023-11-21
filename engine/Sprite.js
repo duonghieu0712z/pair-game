@@ -2,7 +2,10 @@ import { Node } from "./node.js";
 
 export class Sprite extends Node {
   constructor(src) {
-    super("img");
+    super();
+
+    this.image = this._createElement("img");
+    this.element.appendChild(this.image);
 
     this.src = src;
   }
@@ -13,7 +16,7 @@ export class Sprite extends Node {
 
   set src(value) {
     this._src = value;
-    this.element.src = this._src;
-    this.element.alt = this._src;
+    this.image.src = this._src;
+    this.image.alt = this._src;
   }
 }
