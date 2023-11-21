@@ -1,155 +1,97 @@
-const root = document.getElementById("root");
-root.style.margin = "10px";
-root.style.display = "grid";
-root.style.justifyContent = "center";
-root.style.alignItems = "center";
+import { Node } from "./engine/node.js";
+import { Card } from "./game/card.js";
+import { shuffle } from "./game/utils.js";
 
-const txtCoin = document.createElement("div");
-txtCoin.innerHTML = "Coin: 0";
-txtCoin.style.fontSize = "20px";
-txtCoin.style.textAlign = "center";
-root.appendChild(txtCoin);
+const WIDTH = 100;
+const HEIGHT = 146;
+const ROW = 4;
+const COLUMN = 5;
+const DURATION = 0.5;
+const DELAY = 1.2;
 
-const btnRestart = document.createElement("button");
-btnRestart.type = "button";
-btnRestart.textContent = "Restart";
-btnRestart.onclick = initGame;
-btnRestart.style.fontSize = "20px";
-btnRestart.style.margin = "10px";
-btnRestart.style.padding = "10px";
-btnRestart.style.border = "1px solid gray";
-btnRestart.style.borderRadius = "4px";
-btnRestart.style.cursor = "pointer";
-root.appendChild(btnRestart);
+const START_X = (window.innerWidth - WIDTH * COLUMN) / 2;
+const START_Y = (window.innerHeight - HEIGHT * ROW) / 2;
 
-const container = document.createElement("div");
-container.style.display = "grid";
-container.style.gridTemplateColumns = "repeat(5, auto)";
-container.style.gap = "4px";
-container.style.boxSizing = "border-box";
-container.style.justifyContent = "center";
-container.style.alignItems = "center";
-root.appendChild(container);
+const CENTER_X = window.innerWidth / 2;
+const CENTER_Y = window.innerHeight / 2;
 
-let firstCard;
-let lock = false;
-let coin = 10000;
-let countedMatch = 0;
-const backgroundCardColor = "silver";
+let firstCard, secondCard;
+let isLocked = false;
 
-function createCard(color) {
-  const card = document.createElement("div");
-  card.style.width = "100px";
-  card.style.height = "100px";
-  card.style.backgroundColor = backgroundCardColor;
-  card.style.border = "1px solid gray";
-  card.style.borderRadius = "5px";
-  card.style.cursor = "pointer";
+const container = new Node();
+document.body.appendChild(container.element);
 
-  card.classList.add("card");
-  card.dataset.color = color;
-  card.dataset.revealed = false;
-
-  card.onclick = function () {
-    if (lock || this.dataset.revealed == true || this === firstCard) {
-      return;
-    }
-
-    this.style.backgroundColor = this.dataset.color;
-
-    if (!firstCard) {
-      firstCard = this;
-      return;
-    }
-
-    checkMatch(this);
-  };
-
-  return card;
-}
-
-function checkMatch(card) {
-  if (card.dataset.color === firstCard.dataset.color) {
-    matchCard(card);
-  } else {
-    unflip(card);
-  }
-}
-
-function matchCard(card) {
-  card.dataset.revealed = true;
-  firstCard.dataset.revealed = true;
-
-  firstCard = null;
-  lock = false;
-  updateCoin(1000);
-
-  countedMatch += 2;
-  if (countedMatch === 20) {
-    setTimeout(
-      () =>
-        alert(
-          `You win, you get ${coin} coins! Click 'Restart' to start again!`
-        ),
-      11
-    );
-  }
-}
-
-function unflip(card) {
-  lock = true;
-  updateCoin(-500);
-
-  setTimeout(() => {
-    card.style.backgroundColor = backgroundCardColor;
-    firstCard.style.backgroundColor = backgroundCardColor;
-
-    firstCard = null;
-    lock = false;
-  }, 1000);
-}
-
-function updateCoin(bonus) {
-  coin += bonus;
-  txtCoin.innerHTML = `Coin: ${coin}`;
-
-  if (coin < 0) {
-    setTimeout(() => alert("You lose!"), 11);
-    initGame();
-  }
-}
-
-function shuffle(arr) {
-  // for (let i = arr.length - 1; i > 0; i--) {
-  //   const j = Math.trunc(Math.random() * (i + 1));
-  //   [arr[i], arr[j]] = [arr[j], arr[i]];
-  // }
-  return arr;
-}
-
-const colors = [
-  "red",
-  "green",
-  "blue",
-  "yellow",
-  "magenta",
-  "cyan",
-  "orange",
-  "brown",
-  "pink",
-  "purple",
+const cardNames = [
+  "raye",
+  "roze",
+  "kagari",
+  "shizuku",
+  "hayate",
+  "kaina",
+  "azalea",
+  "camellia",
+  "zeke",
+  "hamp",
 ];
 
-function initGame() {
-  firstCard = null;
-  lock = false;
-  coin = 10000;
-  updateCoin(0);
-  container.replaceChildren();
-  shuffle([...colors, ...colors]).forEach((value) => {
-    const card = createCard(value);
-    container.appendChild(card);
+shuffle([...cardNames, ...cardNames]).forEach((value, index) => {
+  const card = new Card(value, `./assets/${value}.jpg`, "./assets/cover.jpg");
+
+  card.x = CENTER_X - WIDTH / 2;
+  card.y = CENTER_Y - HEIGHT / 2;
+
+  const x = (index % COLUMN) * WIDTH + START_X;
+  const y = Math.trunc(index / COLUMN) * HEIGHT + START_Y;
+  card.translate(x, y, DURATION, index * 0.1);
+
+  // card.x = (index % COLUMN) * WIDTH + START_X;
+  // card.y = Math.trunc(index / COLUMN) * HEIGHT + START_Y;
+
+  card.width = WIDTH;
+  card.height = HEIGHT;
+
+  card.onClick(() => {
+    if (isLocked || card.isFlipped) {
+      return;
+    }
+
+    card.flip(DURATION);
+
+    if (!firstCard) {
+      firstCard = card;
+      return;
+    }
+
+    secondCard = card;
+    checkMatch();
   });
+
+  container.addChild(card);
+});
+
+function checkMatch() {
+  if (firstCard.value === secondCard.value) {
+    firstCard = null;
+    secondCard = null;
+
+    isLocked = false;
+    // todo
+    return;
+  }
+
+  unflip();
 }
 
-initGame();
+function unflip() {
+  isLocked = true;
+
+  Promise.all([
+    firstCard.flip(DURATION, DELAY),
+    secondCard.flip(DURATION, DELAY),
+  ]).then(() => (isLocked = false));
+
+  console.log(firstCard.value);
+
+  firstCard = null;
+  secondCard = null;
+}

@@ -1,6 +1,9 @@
 export class Node {
-  constructor() {
-    this._element = this._createElement();
+  constructor(tagName = "div") {
+    this.element = this._createElement(tagName);
+
+    this.scaleX = 1;
+    this.scaleY = 1;
   }
 
   get x() {
@@ -9,7 +12,7 @@ export class Node {
 
   set x(value) {
     this._x = value;
-    this._element.style.left = this._x + "px";
+    this.element.style.left = this._x + "px";
   }
 
   get y() {
@@ -18,7 +21,7 @@ export class Node {
 
   set y(value) {
     this._y = value;
-    this._element.style.top = this._y + "px";
+    this.element.style.top = this._y + "px";
   }
 
   get width() {
@@ -27,7 +30,7 @@ export class Node {
 
   set width(value) {
     this._width = value;
-    this._element.style.width = this._width + "px";
+    this.element.style.width = this._width + "px";
   }
 
   get height() {
@@ -36,7 +39,7 @@ export class Node {
 
   set height(value) {
     this._height = value;
-    this._element.style.height = this._height + "px";
+    this.element.style.height = this._height + "px";
   }
 
   get scaleX() {
@@ -63,28 +66,35 @@ export class Node {
 
   set active(value) {
     this._active = value;
-    this._element.style.display = this._active ? "block" : "none";
+    this.element.style.display = this._active ? "block" : "none";
   }
 
-  _createElement() {
-    const element = document.createElement("div");
+  _createElement(tagName = "div") {
+    const element = document.createElement(tagName);
     element.style.position = "absolute";
+    element.style.width = "100%";
+    element.style.height = "100%";
+
     return element;
   }
 
   _scale() {
-    this._element.style.transform = `scale(${this._scaleX}, ${this._scaleY})`;
+    this.element.style.transform = `scale(${this._scaleX}, ${this._scaleY})`;
   }
 
   addChild(node) {
-    this._element.appendChild(node);
+    this.element.appendChild(node.element);
   }
 
   removeChild(node) {
-    this._element.removeChild(node);
+    this.element.removeChild(node.element);
   }
 
   show(active) {
     this.active = active;
+  }
+
+  onClick(cb) {
+    this.element.onclick = cb;
   }
 }

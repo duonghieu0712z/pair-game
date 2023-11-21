@@ -1,4 +1,4 @@
-import { Node } from "./Node";
+import { Node } from "./node.js";
 
 export class Label extends Node {
   constructor(text) {
@@ -13,6 +13,6 @@ export class Label extends Node {
 
   set text(value) {
     this._text = value;
-    this._element.textContent = this._text;
+    this.element.textContent = this._text;
   }
 }

@@ -1,21 +1,19 @@
-import { Node } from "./Node";
+import { Node } from "./node.js";
 
 export class Sprite extends Node {
-  constructor(image) {
-    super();
+  constructor(src) {
+    super("img");
 
-    this._img = document.createElement("img");
-    this.addChild(this._img);
-
-    this.image = image;
+    this.src = src;
   }
 
-  get image() {
-    return this._image;
+  get src() {
+    return this._src;
   }
 
-  set image(value) {
-    this._image = value;
-    this._img.src = value;
+  set src(value) {
+    this._src = value;
+    this.element.src = this._src;
+    this.element.alt = this._src;
   }
 }
