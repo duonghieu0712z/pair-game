@@ -42,11 +42,11 @@ let isLocked = false;
 const container = new Sprite("../assets/background.jpg");
 document.body.appendChild(container.element);
 
-const scoreTxt = new Label("score");
-scoreTxt.font = "Arial";
-scoreTxt.size = 40;
-scoreTxt.color = "red";
-document.body.appendChild(scoreTxt.element);
+// const scoreTxt = new Label("score");
+// scoreTxt.font = "Arial";
+// scoreTxt.size = 40;
+// scoreTxt.color = "red";
+// document.body.appendChild(scoreTxt.element);
 
 export function initCards() {
   shuffle([...CARD_NAMES, ...CARD_NAMES]).forEach((value, index) => {
