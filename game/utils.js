@@ -5,3 +5,7 @@ export function shuffle(array) {
   // }
   return array;
 }
+
+export function tween(target, props) {
+  return gsap.to(target, props);
+}

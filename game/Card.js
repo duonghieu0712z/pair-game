@@ -13,25 +13,23 @@ export class Card extends Node {
 
     this.isFlipped = false;
     this.value = value;
+
+    this.show(this.isFlipped);
   }
 
-  get isFlipped() {
-    return this._isFlipped;
-  }
-
-  set isFlipped(value) {
-    this._isFlipped = value;
-    this._image.active = this._isFlipped;
-    this._cover.active = !this._isFlipped;
+  show(value) {
+    this._image.active = value;
+    this._cover.active = !value;
   }
 
   flip(duration, delay = 0) {
+    this.isFlipped = !this.isFlipped;
     return gsap.to(this, {
       scaleX: 0,
       duration,
       delay,
       onComplete: () => {
-        this.isFlipped = !this.isFlipped;
+        this.show(this.isFlipped);
         gsap.to(this, { scaleX: 1, duration });
       },
     });
