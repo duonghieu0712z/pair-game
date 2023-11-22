@@ -1,7 +1,7 @@
-import { Sprite } from "./engine/sprite.js";
+import { Sprite } from "/engine/sprite.js";
 
-import { Card } from "./game/card.js";
-import { shuffle } from "./game/utils.js";
+import { Card } from "/game/card.js";
+import { shuffle } from "/game/utils.js";
 
 const CARD_WIDTH = 150;
 const CARD_HEIGHT = 215;
