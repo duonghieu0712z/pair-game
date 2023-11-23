@@ -1,3 +1,5 @@
+import { tween } from "./utils.js";
+
 import { Node } from "../engine/Node.js";
 import { Sprite } from "../engine/Sprite.js";
 
@@ -11,26 +13,35 @@ export class Card extends Node {
     this._cover = new Sprite(cover);
     this.addChild(this._cover);
 
+    this.isFlipping = false;
     this.isFlipped = false;
-    this.value = value;
 
-    this.show(this.isFlipped);
+    this.value = value;
   }
 
-  show(value) {
-    this._image.active = value;
-    this._cover.active = !value;
+  get isFlipped() {
+    return this._isFlipped;
+  }
+
+  set isFlipped(value) {
+    this._isFlipped = value;
+    this._image.active = this._isFlipped;
+    this._cover.active = !this._isFlipped;
   }
 
   flip(duration, delay = 0) {
-    this.isFlipped = !this.isFlipped;
-    return gsap.to(this, {
+    this.isFlipping = true;
+    return tween(this, {
       scaleX: 0,
       duration,
       delay,
       onComplete: () => {
-        this.show(this.isFlipped);
-        gsap.to(this, { scaleX: 1, duration });
+        this.isFlipped = !this.isFlipped;
+        tween(this, {
+          scaleX: 1,
+          duration,
+          onComplete: () => (this.isFlipping = false),
+        });
       },
     });
   }

@@ -68,13 +68,42 @@ export class GameManager {
     card.height = this.cardHeight;
 
     card.onClick(() => {
-      if (this.isLocked || card.isFlipped) {
+      if (this.isLocked || card.isFlipped || card.isFlipping) {
         return;
       }
 
       card.flip(0.5);
+
+      if (!this.firstCard) {
+        this.firstCard = card;
+        return;
+      }
+
+      this.secondCard = card;
+      this.checkMatch();
     });
 
     this.container.addChild(card);
+  }
+
+  checkMatch() {
+    if (this.firstCard.value === this.secondCard.value) {
+      this.firstCard = null;
+      this.secondCard = null;
+
+      this.isLocked = false;
+
+      return;
+    }
+
+    this.isLocked = true;
+
+    Promise.all([
+      this.firstCard.flip(0.5, 1.2),
+      this.secondCard.flip(0.5, 1.2),
+    ]).then(() => (this.isLocked = false));
+
+    this.firstCard = null;
+    this.secondCard = null;
   }
 }
