@@ -55,7 +55,7 @@ export class GameManager {
     const cover = "./assets/cover.jpg";
     const card = new Card(value, image, cover);
 
-    const row = index % this.row;
+    const row = Math.trunc(index / this.column);
     const column = index % this.column;
 
     const x = column * (this.cardWidth + this.cardSpan) + this.cardStartX;
