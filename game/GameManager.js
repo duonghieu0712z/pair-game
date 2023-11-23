@@ -5,7 +5,7 @@ import { Sprite } from "../engine/Sprite.js";
 
 export class GameManager {
   constructor() {
-    this.container = new Sprite("../images/background.jpg");
+    this.container = new Sprite("./assets/background.jpg");
     document.body.appendChild(this.container.element);
 
     this.cardWidth = 150;
@@ -51,8 +51,8 @@ export class GameManager {
   }
 
   createCard(value, index) {
-    const image = `../images/${value}.jpg`;
-    const cover = "../images/cover.jpg";
+    const image = `./assets/${value}.jpg`;
+    const cover = "./assets/cover.jpg";
     const card = new Card(value, image, cover);
 
     const row = index % this.row;
