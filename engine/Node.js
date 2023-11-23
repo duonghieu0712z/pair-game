@@ -82,6 +82,10 @@ export class Node {
     this.element.style.transform = `scale(${this._scaleX}, ${this._scaleY})`;
   }
 
+  enableCursor(value) {
+    this.element.style.cursor = value ? "pointer" : "";
+  }
+
   addChild(node) {
     this.element.appendChild(node.element);
   }

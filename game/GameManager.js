@@ -1,12 +1,16 @@
 import { Card } from "./Card.js";
 import { shuffle } from "./utils.js";
 
+import { Label } from "../engine/Label.js";
 import { Sprite } from "../engine/Sprite.js";
 
 export class GameManager {
   constructor() {
     this.container = new Sprite("./assets/background.jpg");
     document.body.appendChild(this.container.element);
+
+    this.createScoreText();
+    this.createReplayButton();
 
     this.cardWidth = 150;
     this.cardHeight = 215;
@@ -26,7 +30,54 @@ export class GameManager {
     this.cardStartX = (window.innerWidth - boardWidth) / 2;
     this.cardStartY = (window.innerHeight - boardHeight) / 2;
 
-    this.cardNames = [
+    this.durationFlip = 0.5;
+    this.delayFlipOver = 1.2;
+
+    this.durationZoom = 1;
+    this.delayZoom = 1.2;
+  }
+
+  createScoreText() {
+    this.scoreText = new Label("Score: 0");
+    this.scoreText.x = 50;
+    this.scoreText.y = 50;
+    this.scoreText.font = "Arial";
+    this.scoreText.size = 36;
+    this.scoreText.color = "white";
+    document.body.appendChild(this.scoreText.element);
+  }
+
+  createReplayButton() {
+    this.replayButton = new Label("Replay");
+    this.replayButton.x = 50;
+    this.replayButton.y = 100;
+    this.replayButton.font = "Arial";
+    this.replayButton.size = 36;
+    this.replayButton.color = "white";
+    this.replayButton.enableCursor(true);
+    this.replayButton.onClick(() => this.init());
+    document.body.appendChild(this.replayButton.element);
+  }
+
+  start() {
+    this.init();
+  }
+
+  init() {
+    this.score = 10000;
+    this.updateScore(0);
+
+    this.shuffleCards();
+
+    this.flippedCardCount = 0;
+
+    this.firstCard = null;
+    this.secondCard = null;
+    this.isLocked = false;
+  }
+
+  shuffleCards() {
+    const cardNames = [
       "raye",
       "roze",
       "kagari",
@@ -39,14 +90,16 @@ export class GameManager {
       "hamp",
     ];
 
-    this.firstCard = null;
-    this.secondCard = null;
-    this.isLocked = false;
+    this.refreshContainer();
+
+    shuffle([...cardNames, ...cardNames]).forEach((value, index) =>
+      this.createCard(value, index)
+    );
   }
 
-  init() {
-    shuffle([...this.cardNames, ...this.cardNames]).forEach((value, index) =>
-      this.createCard(value, index)
+  refreshContainer() {
+    this.container.element.replaceChildren(
+      this.container.element.firstElementChild
     );
   }
 
@@ -72,7 +125,7 @@ export class GameManager {
         return;
       }
 
-      card.flip(0.5);
+      card.flip(this.durationFlip);
 
       if (!this.firstCard) {
         this.firstCard = card;
@@ -86,24 +139,53 @@ export class GameManager {
     this.container.addChild(card);
   }
 
-  checkMatch() {
-    if (this.firstCard.value === this.secondCard.value) {
-      this.firstCard = null;
-      this.secondCard = null;
+  isMatch() {
+    return this.firstCard.value === this.secondCard.value;
+  }
 
-      this.isLocked = false;
+  checkMatch() {
+    this.isLocked = true;
+    if (this.isMatch()) {
+      this.updateScore(1000);
+
+      Promise.all([
+        this.firstCard.zoom(this.durationZoom, this.delayZoom),
+        this.secondCard.zoom(this.durationZoom, this.delayZoom),
+      ]).then(() => {
+        this.container.removeChild(this.firstCard);
+        this.container.removeChild(this.secondCard);
+
+        this.firstCard = null;
+        this.secondCard = null;
+
+        this.isLocked = false;
+      });
+
+      this.flippedCardCount += 2;
+      if (this.flippedCardCount === 20) {
+        // todo
+        console.log("chuc mung");
+      }
 
       return;
     }
 
-    this.isLocked = true;
+    this.updateScore(-500);
+    this.flipOver();
+  }
 
+  flipOver() {
     Promise.all([
-      this.firstCard.flip(0.5, 1.2),
-      this.secondCard.flip(0.5, 1.2),
+      this.firstCard.flip(this.durationFlip, this.delayFlipOver),
+      this.secondCard.flip(this.durationFlip, this.delayFlipOver),
     ]).then(() => (this.isLocked = false));
 
     this.firstCard = null;
     this.secondCard = null;
+  }
+
+  updateScore(score) {
+    this.score += score;
+    this.scoreText.text = `Score: ${this.score}`;
   }
 }

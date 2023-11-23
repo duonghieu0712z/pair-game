@@ -3,6 +3,8 @@ import { Node } from "./Node.js";
 export class Label extends Node {
   constructor(text) {
     super();
+    this.element.style.width = "";
+    this.element.style.height = "";
 
     this.text = text;
   }
