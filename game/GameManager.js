@@ -1,40 +1,19 @@
-import { Card } from "./Card.js";
-import { shuffle } from "./utils.js";
-
 import { Label } from "../engine/Label.js";
-import { Sprite } from "../engine/Sprite.js";
 
 export class GameManager {
-  constructor() {
-    this.container = new Sprite("./assets/background.jpg");
-    document.body.appendChild(this.container.element);
-
-    this.createScoreText();
-    this.createReplayButton();
-
-    this.cardWidth = 150;
-    this.cardHeight = 215;
-    this.cardSpan = 5;
-
-    this.row = 4;
-    this.column = 5;
-
-    this.centerX = window.innerWidth / 2;
-    this.centerY = window.innerHeight / 2;
-
-    const boardWidth =
-      this.cardWidth * this.column + this.cardSpan * (this.column - 1);
-    const boardHeight =
-      this.cardHeight * this.row + this.cardSpan * (this.row - 1);
-
-    this.cardStartX = (window.innerWidth - boardWidth) / 2;
-    this.cardStartY = (window.innerHeight - boardHeight) / 2;
+  constructor(container) {
+    this.container = container;
+    this.container.onShuffleCard = (condition) => this.onShuffleCard(condition);
+    this.container.onClickCard = (card) => this.onClickCard(card);
 
     this.durationFlip = 0.5;
     this.delayFlipOver = 1.2;
 
     this.durationZoom = 1;
     this.delayZoom = 1.2;
+
+    this.createScoreText();
+    this.createRestartButton();
   }
 
   createScoreText() {
@@ -47,16 +26,16 @@ export class GameManager {
     document.body.appendChild(this.scoreText.element);
   }
 
-  createReplayButton() {
-    this.replayButton = new Label("Replay");
-    this.replayButton.x = 50;
-    this.replayButton.y = 100;
-    this.replayButton.font = "Arial";
-    this.replayButton.size = 36;
-    this.replayButton.color = "white";
-    this.replayButton.enableCursor(true);
-    this.replayButton.onClick(() => this.init());
-    document.body.appendChild(this.replayButton.element);
+  createRestartButton() {
+    this.restartButton = new Label("Restart");
+    this.restartButton.x = 50;
+    this.restartButton.y = 100;
+    this.restartButton.font = "Arial";
+    this.restartButton.size = 36;
+    this.restartButton.color = "white";
+    this.restartButton.enableCursor(true);
+    this.restartButton.onClick(() => this.init());
+    document.body.appendChild(this.restartButton.element);
   }
 
   start() {
@@ -67,76 +46,35 @@ export class GameManager {
     this.score = 10000;
     this.updateScore(0);
 
-    this.shuffleCards();
+    this.isLocked = true;
+    this.container.shuffleCards();
 
     this.flippedCardCount = 0;
 
     this.firstCard = null;
     this.secondCard = null;
-    this.isLocked = false;
   }
 
-  shuffleCards() {
-    const cardNames = [
-      "raye",
-      "roze",
-      "kagari",
-      "shizuku",
-      "hayate",
-      "kaina",
-      "azalea",
-      "camellia",
-      "zeke",
-      "hamp",
-    ];
-
-    this.refreshContainer();
-
-    shuffle([...cardNames, ...cardNames]).forEach((value, index) =>
-      this.createCard(value, index)
-    );
+  onShuffleCard(condition) {
+    if (condition) {
+      this.isLocked = false;
+    }
   }
 
-  refreshContainer() {
-    this.container.element.replaceChildren(
-      this.container.element.firstElementChild
-    );
-  }
+  onClickCard(card) {
+    if (this.isLocked || card.isFlipped || card.isFlipping) {
+      return;
+    }
 
-  createCard(value, index) {
-    const image = `./assets/${value}.jpg`;
-    const cover = "./assets/cover.jpg";
-    const card = new Card(value, image, cover);
+    card.flip(this.durationFlip);
 
-    const row = Math.trunc(index / this.column);
-    const column = index % this.column;
+    if (!this.firstCard) {
+      this.firstCard = card;
+      return;
+    }
 
-    const x = column * (this.cardWidth + this.cardSpan) + this.cardStartX;
-    const y = row * (this.cardHeight + this.cardSpan) + this.cardStartY;
-
-    card.x = x;
-    card.y = y;
-
-    card.width = this.cardWidth;
-    card.height = this.cardHeight;
-
-    card.onClick(() => {
-      if (this.isLocked || card.isFlipped || card.isFlipping) {
-        return;
-      }
-
-      card.flip(this.durationFlip);
-
-      if (!this.firstCard) {
-        this.firstCard = card;
-        return;
-      }
-
-      this.secondCard = card;
-      this.checkMatch();
-    });
-
-    this.container.addChild(card);
+    this.secondCard = card;
+    this.checkMatch();
   }
 
   isMatch() {

@@ -24,6 +24,15 @@ export class Node {
     this.element.style.top = this._y + "px";
   }
 
+  get z() {
+    return this._z;
+  }
+
+  set z(value) {
+    this._z = value;
+    this.element.style.zIndex = value;
+  }
+
   get width() {
     return this._width;
   }
@@ -92,6 +101,10 @@ export class Node {
 
   removeChild(node) {
     this.element.removeChild(node.element);
+  }
+
+  removeChildren() {
+    this.element.replaceChildren();
   }
 
   show(active) {

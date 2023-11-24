@@ -1,4 +1,3 @@
-import { GameManager } from "./game/GameManager.js";
+import { Scene } from "./game/Scene.js";
 
-const gameManager = new GameManager();
-gameManager.start();
+new Scene();

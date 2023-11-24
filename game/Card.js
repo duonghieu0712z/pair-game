@@ -1,7 +1,7 @@
-import { tween } from "./utils.js";
-
 import { Node } from "../engine/Node.js";
 import { Sprite } from "../engine/Sprite.js";
+
+import { tween } from "./utils.js";
 
 export class Card extends Node {
   constructor(value, image, cover) {
@@ -38,7 +38,17 @@ export class Card extends Node {
     this.element.style.opacity = value;
   }
 
+  moveTo(x, y, duration, delay) {
+    return tween(this, {
+      x,
+      y,
+      duration,
+      delay,
+    });
+  }
+
   zoom(duration, delay) {
+    this.z = 999;
     this.opacity = 1;
     return tween(this, {
       scaleX: 1.5,
