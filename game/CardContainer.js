@@ -10,15 +10,14 @@ export class CardContainer extends Node {
     this.onClickCard = () => {};
     this.onShuffleCard = () => {};
 
-    this.cardWidth = 100; //150;
-    this.cardHeight = 143; //215;
+    this.cardWidth = 150;
+    this.cardHeight = 215;
     this.cardSpan = 5;
 
     this.row = 4;
     this.column = 5;
 
-    this.width =
-      this.cardWidth * this.column + this.cardSpan * (this.column - 1);
+    this.width = this.cardWidth * this.column + this.cardSpan * (this.column - 1);
     this.height = this.cardHeight * this.row + this.cardSpan * (this.row - 1);
 
     this.x = (window.innerWidth - this.width) / 2;
