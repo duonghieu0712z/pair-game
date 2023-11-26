@@ -10,23 +10,22 @@ export class CardContainer extends Node {
     this.onClickCard = () => {};
     this.onShuffleCard = () => {};
 
-    this.cardWidth = 150;
-    this.cardHeight = 215;
+    this.cardWidth = 100; //150;
+    this.cardHeight = 143; //215;
     this.cardSpan = 5;
 
     this.row = 4;
     this.column = 5;
 
-    this.centerX = window.innerWidth / 2;
-    this.centerY = window.innerHeight / 2;
-
-    const boardWidth =
+    this.width =
       this.cardWidth * this.column + this.cardSpan * (this.column - 1);
-    const boardHeight =
-      this.cardHeight * this.row + this.cardSpan * (this.row - 1);
+    this.height = this.cardHeight * this.row + this.cardSpan * (this.row - 1);
 
-    this.cardStartX = (window.innerWidth - boardWidth) / 2;
-    this.cardStartY = (window.innerHeight - boardHeight) / 2;
+    this.x = (window.innerWidth - this.width) / 2;
+    this.y = (window.innerHeight - this.height) / 2;
+
+    this.centerX = this.width / 2;
+    this.centerY = this.height / 2;
 
     this.durationFlip = 0.5;
     this.delayFlipOver = 1.2;
@@ -51,7 +50,7 @@ export class CardContainer extends Node {
   shuffleCards() {
     this.reset();
     shuffle([...this.cardNames, ...this.cardNames]).forEach((value, index) =>
-      this.createCard(value, index)
+      this.createCard(value, index),
     );
   }
 
@@ -70,8 +69,8 @@ export class CardContainer extends Node {
     const row = Math.trunc(index / this.column);
     const column = index % this.column;
 
-    const x = column * (this.cardWidth + this.cardSpan) + this.cardStartX;
-    const y = row * (this.cardHeight + this.cardSpan) + this.cardStartY;
+    const x = column * (this.cardWidth + this.cardSpan);
+    const y = row * (this.cardHeight + this.cardSpan);
 
     card.width = this.cardWidth;
     card.height = this.cardHeight;

@@ -5,6 +5,7 @@ export class Label extends Node {
     super();
     this.element.style.width = "";
     this.element.style.height = "";
+    this.element.style.textAlign = "center";
 
     this.text = text;
   }
@@ -43,5 +44,14 @@ export class Label extends Node {
   set color(value) {
     this._color = value;
     this.element.style.color = this._color;
+  }
+
+  get isBold() {
+    return this._isBold;
+  }
+
+  set isBold(value) {
+    this._isBold = value;
+    this.element.style.fontWeight = this._isBold ? "bold" : "normal";
   }
 }
